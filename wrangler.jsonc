@@ -1,0 +1,21 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "mekapaws-ai",
+  "main": "worker.js",
+  "compatibility_date": "2026-10-21",
+  "vars": {
+    "AI_PROVIDER": "openai",
+    "AI_MODEL": "gpt-5-mini",
+    "SITE_ORIGINS": "https://cennizas.github.io,http://localhost:8000"
+  },
+  "ratelimits": [
+    {
+      "name": "CHAT_LIMITER",
+      "namespace_id": "762921026",
+      "simple": {
+        "limit": 20,
+        "period": 60
+      }
+    }
+  ]
+}

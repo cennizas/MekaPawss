@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<!--
+  MekaPaws — sitio web oficial (proyecto escolar EMI 2026)
+  Colegio Orlando Fals Borda IED · Bogotá D. C., Colombia
+
+  CÓMO FUNCIONA EL IDIOMA (ES/EN):
+  Cada texto traducible lleva data-es="..." y data-en="...". El contenido visible
+  del HTML está en español (idioma por defecto). script.js cambia el texto según
+  el botón del header y guarda la elección en localStorage.
+  Atributos traducibles (alt, aria-label, title, content): data-es-alt / data-en-alt, etc.
+-->
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Aplica el tema guardado (o la preferencia del sistema) ANTES de pintar, para evitar parpadeo -->
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem('mekapaws-theme');
+        if (!t) t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', t);
+        document.documentElement.classList.add('js');
+        var l = localStorage.getItem('mekapaws-lang');
+        if (l === 'en') document.documentElement.setAttribute('lang', 'en');
+      } catch (e) { document.documentElement.classList.add('js'); }
+    })();
+  </script>
+
+  <title data-es="MekaPaws · Prótesis 3D para perros y gatos amputados en Boyacá" data-en="MekaPaws · 3D prosthetics for amputee dogs and cats in Boyacá">MekaPaws · Prótesis 3D para perros y gatos amputados en Boyacá</title>
+  <meta name="description"
+        content="MekaPaws es un proyecto escolar del Colegio Orlando Fals Borda IED que diseña prótesis personalizadas con impresión 3D para caninos y felinos amputados en zonas rurales de Boyacá, Colombia."
+        data-es-content="MekaPaws es un proyecto escolar del Colegio Orlando Fals Borda IED que diseña prótesis personalizadas con impresión 3D para caninos y felinos amputados en zonas rurales de Boyacá, Colombia."
+        data-en-content="MekaPaws is a school project from Colegio Orlando Fals Borda IED that designs personalized 3D-printed prosthetics for amputee canines and felines in rural Boyacá, Colombia.">
+  <meta name="theme-color" content="#3E2C23">
+  <!-- Poner aquí la URL del Worker desplegado para activar el modo IA. -->
+  <meta name="mekapaws-ai-endpoint" content="">
+  <!-- TODO: reemplazar cennizas/REPO por la URL real al publicar en GitHub Pages -->
+  <link rel="canonical" href="https://cennizas.github.io/MekaPaws/">
+  <link rel="icon" type="image/png" href="assets/logo-mekapaws.png">
+  <link rel="stylesheet" href="styles.css">
+
+  <!-- Open Graph / Twitter Card -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="MekaPaws">
+  <meta property="og:title" content="MekaPaws · Segunda oportunidad para correr">
+  <meta property="og:description" content="Prótesis 3D personalizadas para perros y gatos amputados en zonas rurales de Boyacá. Proyecto escolar EMI 2026.">
+  <meta property="og:url" content="https://cennizas.github.io/MekaPaws/">
+  <meta property="og:image" content="https://cennizas.github.io/MekaPaws/assets/logo-mekapaws.png">
+  <meta property="og:image:alt" content="MekaPaws">
+  <meta property="og:locale" content="es_CO">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="MekaPaws · Segunda oportunidad para correr">
+  <meta name="twitter:description" content="Prótesis 3D personalizadas para perros y gatos amputados en zonas rurales de Boyacá.">
+  <meta name="twitter:image" content="https://cennizas.github.io/MekaPaws/assets/logo-mekapaws.png">
+
+  <!-- Datos estructurados schema.org (Organization) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "MekaPaws",
+    "alternateName": "MekaPaws · Proyecto EMI 2026",
+    "url": "https://cennizas.github.io/MekaPaws/",
+    "logo": "https://cennizas.github.io/MekaPaws/assets/logo-mekapaws.png",
+    "description": "Proyecto escolar del Colegio Orlando Fals Borda IED que diseña prótesis personalizadas con impresión 3D para caninos y felinos amputados en zonas rurales de Boyacá, Colombia.",
+    "slogan": "Segunda oportunidad para correr",
+    "areaServed": { "@type": "AdministrativeArea", "name": "Boyacá, Colombia" },
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Calle 71 D Sur #14-16",
+      "addressLocality": "Usme, Bogotá D.C.",
+      "addressCountry": "CO"
+    },
+    "email": "ashescatto@gmail.com",
+    "telephone": "+573045901916",
+    "parentOrganization": { "@type": "EducationalOrganization", "name": "Colegio Orlando Fals Borda IED" }
+  }
+  </script>
+
+  <!-- Tipografía: Playfair Display (títulos) + Nunito Sans (cuerpo). Máximo dos familias. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700&family=Playfair+Display:wght@600;700&display=swap">
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <a class="skip-link" href="#contenido" data-es="Saltar al contenido" data-en="Skip to content">Saltar al contenido</a>
+
+  <!-- ================= HEADER / NAVEGACIÓN FIJA ================= -->
+  <header class="site-header" id="top">
+    <div class="container header-inner">
+      <a class="brand" href="#inicio" aria-label="MekaPaws" data-es-aria-label="MekaPaws, ir al inicio" data-en-aria-label="MekaPaws, go to top">
+        <!-- Logo: se reserva con width/height para evitar saltos de layout; no lleva lazy (está sobre el pliegue) -->
+        <img src="assets/logo-mekapaws.png" alt="MekaPaws" width="44" height="44">
+        <span class="brand-text">MekaPaws</span>
+      </a>
+
+      <nav id="site-nav" class="site-nav" aria-label="Navegación principal" data-es-aria-label="Navegación principal" data-en-aria-label="Main navigation">
+        <ul>
+          <li><a href="#inicio" data-nav="inicio" data-es="Inicio" data-en="Home">Inicio</a></li>
+          <li><a href="#nosotros" data-nav="nosotros" data-es="Nosotros" data-en="About us">Nosotros</a></li>
+          <li><a href="#problema" data-nav="problema" data-es="Problema" data-en="Problem">Problema</a></li>
+          <li><a href="#diagnostico" data-nav="diagnostico" data-es="Diagnóstico" data-en="Diagnosis">Diagnóstico</a></li>
+          <li><a href="#taller" data-nav="taller" data-es="Taller" data-en="Workshop">Taller</a></li>
+          <li><a href="#minijuego" data-nav="minijuego" data-es="Juego" data-en="Game">Juego</a></li>
+          <li><a href="#catalogo" data-nav="catalogo" data-es="Catálogo" data-en="Catalog">Catálogo</a></li>
+          <li><a href="#ubicacion" data-nav="ubicacion" data-es="Ubicación" data-en="Location">Ubicación</a></li>
+          <li><a href="#faq" data-nav="faq" data-es="Preguntas" data-en="FAQ">Preguntas</a></li>
+          <li><a class="nav-cta" href="#contacto" data-nav="contacto" data-es="Solicitar valoración" data-en="Request an assessment">Solicitar valoración</a></li>
+        </ul>
+      </nav>
+
+      <div class="header-tools">
+        <!-- Toggle de idioma -->
+        <button type="button" class="tool-btn" id="lang-toggle"
+                aria-label="Cambiar idioma a inglés"
+                data-es-aria-label="Cambiar idioma a inglés" data-en-aria-label="Switch language to Spanish">
+          <span id="lang-label" aria-hidden="true">EN</span>
+        </button>
+        <!-- Toggle de tema -->
+        <button type="button" class="tool-btn" id="theme-toggle" aria-pressed="false"
+                aria-label="Activar modo oscuro"
+                data-es-aria-label="Cambiar entre modo claro y oscuro" data-en-aria-label="Switch between light and dark mode">
+          <svg class="icon-moon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path fill="currentColor" d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+          <svg class="icon-sun" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4.5" fill="currentColor"/><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></g></svg>
+        </button>
+        <!-- Menú hamburguesa (solo móvil) -->
+        <button type="button" class="tool-btn menu-btn" id="menu-toggle" aria-expanded="false" aria-controls="site-nav"
+                aria-label="Abrir menú" data-es-aria-label="Abrir menú" data-en-aria-label="Open menu">
+          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><g stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path class="bar b1" d="M4 7h16"/><path class="bar b2" d="M4 12h16"/><path class="bar b3" d="M4 17h16"/></g></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="contenido">
+
+    <!-- ================= INICIO ================= -->
+    <section id="inicio" class="hero" aria-labelledby="hero-title">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow" data-es="Proyecto escolar · Proyectos EMI 2026" data-en="School project · EMI Projects 2026">Proyecto escolar · Proyectos EMI 2026</p>
+          <h1 id="hero-title" data-es="Una segunda oportunidad para correr" data-en="A second chance to run">Una segunda oportunidad para correr</h1>
+          <p class="lead" data-es="Estamos diseñando prótesis 3D personalizadas para perros y gatos amputados de zonas rurales de Boyacá, con materiales locales y un modelo de acceso comunitario." data-en="We are designing personalized 3D-printed prosthetics for amputee dogs and cats in rural Boyacá, using local materials and a community access model.">Estamos diseñando prótesis 3D personalizadas para perros y gatos amputados de zonas rurales de Boyacá, con materiales locales y un modelo de acceso comunitario.</p>
+          <div class="cta-row">
+            <a class="btn btn-primary" href="#contacto" data-es="Solicitar valoración" data-en="Request an assessment">Solicitar valoración</a>
+            <a class="btn btn-ghost" href="#como-funciona" data-es="Conocer el proceso" data-en="See how it works">Conocer el proceso</a>
+          </div>
+          <p class="honesty-note" data-es="Somos un proyecto escolar en etapa de prototipo y validación. Las actividades futuras son proyecciones, no resultados medidos." data-en="We are a school project in the prototype and validation stage. Future activities are projections, not measured results.">Somos un proyecto escolar en etapa de prototipo y validación. Las actividades futuras son proyecciones, no resultados medidos.</p>
+        </div>
+        <div class="hero-art">
+          <!-- Logo del hero: sin lazy y con prioridad alta (LCP) -->
+          <img src="assets/logo-mekapaws.png" alt="MekaPaws" width="420" height="420" fetchpriority="high">
+        </div>
+      </div>
+    </section>
+
+    <!-- Panel de acceso rápido: permite explorar el proyecto por temas. -->
+    <section id="explora" class="section hub-section reveal" data-nav="inicio" aria-labelledby="hub-title">
+      <div class="container">
+        <header class="section-head">
+          <p class="eyebrow" data-es="Explora MekaPaws" data-en="Explore MekaPaws">Explora MekaPaws</p>
+          <h2 id="hub-title" data-es="Un proyecto, varias formas de conocerlo" data-en="One project, several ways to explore it">Un proyecto, varias formas de conocerlo</h2>
+          <p class="section-lead" data-es="Entra al panel que te interesa: la historia, el reto, el diseño o cómo solicitar una valoración." data-en="Choose the panel that interests you: our story, the challenge, the design or how to request an assessment.">Entra al panel que te interesa: la historia, el reto, el diseño o cómo solicitar una valoración.</p>
+        </header>
+        <div class="hub-grid">
+          <a class="hub-card" href="#nosotros"><span class="hub-index">01</span><span class="hub-title" data-es="Quiénes somos" data-en="Who we are">Quiénes somos</span><span data-es="Misión, visión y el origen escolar del proyecto." data-en="Our mission, vision and school project roots.">Misión, visión y el origen escolar del proyecto.</span><span class="hub-arrow" aria-hidden="true">↗</span></a>
+          <a class="hub-card" href="#problema"><span class="hub-index">02</span><span class="hub-title" data-es="El reto" data-en="The challenge">El reto</span><span data-es="Qué barreras buscamos atender y cuál es nuestro enfoque." data-en="The barriers we want to address and our approach.">Qué barreras buscamos atender y cuál es nuestro enfoque.</span><span class="hub-arrow" aria-hidden="true">↗</span></a>
+          <a class="hub-card" href="#diagnostico"><span class="hub-index">03</span><span class="hub-title" data-es="Investigación" data-en="Research">Investigación</span><span data-es="FODA, causas y fases de trabajo previstas." data-en="SWOT, causes and planned work phases.">FODA, causas y fases de trabajo previstas.</span><span class="hub-arrow" aria-hidden="true">↗</span></a>
+          <a class="hub-card" href="#taller"><span class="hub-index">04</span><span class="hub-title" data-es="Diseño y proceso" data-en="Design and process">Diseño y proceso</span><span data-es="El taller proyectado, el modelo 3D y los seis pasos." data-en="The planned workshop, 3D model and six steps.">El taller proyectado, el modelo 3D y los seis pasos.</span><span class="hub-arrow" aria-hidden="true">↗</span></a>
+          <a class="hub-card" href="#catalogo"><span class="hub-index">05</span><span class="hub-title" data-es="Opciones de apoyo" data-en="Support options">Opciones de apoyo</span><span data-es="Alternativas de prótesis y acceso comunitario." data-en="Prosthetic options and community access.">Alternativas de prótesis y acceso comunitario.</span><span class="hub-arrow" aria-hidden="true">↗</span></a>
+          <a class="hub-card hub-card-accent" href="#contacto"><span class="hub-index">06</span><span class="hub-title" data-es="Hablemos" data-en="Get in touch">Hablemos</span><span data-es="Solicita una valoración para tu mascota." data-en="Request an assessment for your pet.">Solicita una valoración para tu mascota.</span><span class="hub-arrow" aria-hidden="true">↗</span></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= NOSOTROS: quiénes somos, misión y visión ================= -->
+    <section id="nosotros" class="section reveal" data-nav="nosotros" aria-labelledby="nosotros-title">
+      <div class="container">
+        <header class="section-head">
+          <p class="eyebrow" data-es="¿Quiénes somos?" data-en="Who are we?">¿Quiénes somos?</p>
+          <h2 id="nosotros-title" data-es="Estudiantes que quieren que ninguna mascota se quede sin moverse" data-en="Students who want no pet to be left without mobility">Estudiantes que quieren que ninguna mascota se quede sin moverse</h2>
+        </header>
+
+        <div class="about-copy">
+          <div>
+            <p data-es="MekaPaws nace en el Colegio Orlando Fals Borda IED, en Bogotá, como proyecto del programa de Educación Media Integral (EMI). Tres estudiantes unimos diseño 3D, trabajo comunitario y planeación para buscar una alternativa accesible a las prótesis importadas." data-en="MekaPaws was born at Colegio Orlando Fals Borda IED in Bogotá as a project of the Integrated Secondary Education (EMI) program. Three students combine 3D design, community work and planning to look for an accessible alternative to imported prosthetics.">MekaPaws nace en el Colegio Orlando Fals Borda IED, en Bogotá, como proyecto del programa de Educación Media Integral (EMI). Tres estudiantes unimos diseño 3D, trabajo comunitario y planeación para buscar una alternativa accesible a las prótesis importadas.</p>
+            <p data-es="El nombre mezcla “Meka”, de mecánica y tecnología, con “Paws”, patas en inglés: tecnología para las patas." data-en="The name blends “Meka”, from mechanics and technology, with “Paws”: technology for paws.">El nombre mezcla “Meka”, de mecánica y tecnología, con “Paws”, patas en inglés: tecnología para las patas.</p>
+            <p data-es="No pretendemos reemplazar la atención veterinaria ni las políticas de bienestar animal: queremos complementarlas." data-en="We do not aim to replace veterinary care or animal welfare policies: we want to complement them.">No pretendemos reemplazar la atención veterinaria ni las políticas de bienestar animal: queremos complementarlas.</p>
+
+            <ul class="team" aria-label="Equipo" data-es-aria-label="Equipo del proyecto" data-en-aria-label="Project team">
+              <li><strong>Ashley</strong> <span data-es="Coordinación del proyecto" data-en="Project coordination">Coordinación del proyecto</span></li>
+              <li><strong>Edwin Alejandro</strong> <span data-es="Diseño y estructuración técnica" data-en="Design and technical structuring">Diseño y estructuración técnica</span></li>
+              <li><strong>Sara Valentina</strong> <span data-es="Investigación, trabajo comunitario y sostenibilidad" data-en="Research, community work and sustainability">Investigación, trabajo comunitario y sostenibilidad</span></li>
+            </ul>
+          </div>
+
+        </div>
+
+        <div class="cards cards-2">
+          <article class="card">
+            <h3 data-es="Misión" data-en="Mission">Misión</h3>
+            <p data-es="Diseñar y evaluar, junto con profesionales veterinarios y la comunidad, alternativas protésicas accesibles para caninos y felinos de zonas rurales de Boyacá, con atención al bienestar de cada animal." data-en="To design and evaluate accessible prosthetic options for dogs and cats in rural Boyacá alongside veterinary professionals and the community, with each animal’s welfare in mind.">Diseñar y evaluar, junto con profesionales veterinarios y la comunidad, alternativas protésicas accesibles para caninos y felinos de zonas rurales de Boyacá, con atención al bienestar de cada animal.</p>
+          </article>
+          <article class="card">
+            <h3 data-es="Visión" data-en="Vision">Visión</h3>
+            <p data-es="Consolidar un modelo escolar y comunitario que pueda servir de referencia en otras regiones, si el aprendizaje del proyecto, la validación veterinaria y el trabajo con las familias lo hacen viable." data-en="To build a school and community model that could inform work in other regions if project learning, veterinary validation and collaboration with families make it viable.">Consolidar un modelo escolar y comunitario que pueda servir de referencia en otras regiones, si el aprendizaje del proyecto, la validación veterinaria y el trabajo con las familias lo hacen viable.</p>
+          </article>
+        </div>
+
+        <ul class="chips" aria-label="Valores" data-es-aria-label="Nuestros valores" data-en-aria-label="Our values">
+          <li data-es="Compasión" data-en="Compassion">Compasión</li>
+          <li data-es="Innovación" data-en="Innovation">Innovación</li>
+          <li data-es="Accesibilidad" data-en="Accessibility">Accesibilidad</li>
+          <li data-es="Calidad" data-en="Quality">Calidad</li>
+          <li data-es="Sostenibilidad" data-en="Sustainability">Sostenibilidad</li>
+          <li data-es="Colaboración" data-en="Collaboration">Colaboración</li>
+          <li data-es="Ética" data-en="Ethics">Ética</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ================= PROBLEMA Y SOLUCIÓN + OBJETIVOS ================= -->
+    <section id="problema" class="section section-alt reveal" data-nav="problema" aria-labelledby="problema-title">
+      <div class="container">
+        <header class="section-head">
+          <p class="eyebrow" data-es="Problema y solución" data-en="Problem and solution">Problema y solución</p>
+          <h2 id="problema-title" data-es="Sin acceso a una prótesis, moverse en el campo es mucho más difícil" data-en="Without access to a prosthetic, getting around in the countryside is much harder">Sin acceso a una prótesis, moverse en el campo es mucho más difícil</h2>
+          <p class="section-lead" data-es="En zonas rurales de Boyacá hay perros y gatos que perdieron una extremidad por atropellamientos, trampas, maltrato, enfermedad o malformación congénita. Les cuesta desplazarse en terrenos irregulares, alimentarse, jugar y relacionarse." data-en="In rural Boyacá there are dogs and cats that lost a limb due to road accidents, traps, mistreatment, illness or congenital malformation. They struggle to move on uneven ground, feed, play and socialize.">En zonas rurales de Boyacá hay perros y gatos que perdieron una extremidad por atropellamientos, trampas, maltrato, enfermedad o malformación congénita. Les cuesta desplazarse en terrenos irregulares, alimentarse, jugar y relacionarse.</p>
+        </header>
+
+        <h3 class="sub" data-es="Lo que dificulta el acceso" data-en="What makes access difficult">Lo que dificulta el acceso</h3>
+        <div class="cards cards-4">
+          <article class="card">
+            <h4 data-es="Técnico" data-en="Technical">Técnico</h4>
+            <p data-es="Poco acceso a impresión 3D en el campo y casi no hay diseños pensados para razas criollas y terrenos montañosos." data-en="Little access to 3D printing in rural areas and almost no designs made for mixed-breed animals and mountain terrain.">Poco acceso a impresión 3D en el campo y casi no hay diseños pensados para razas criollas y terrenos montañosos.</p>
+          </article>
+          <article class="card">
+            <h4 data-es="Económico" data-en="Economic">Económico</h4>
+            <p data-es="Las opciones disponibles pueden implicar costos y desplazamientos difíciles de asumir para algunas familias rurales. El proyecto busca explorar una alternativa local, personalizada y acompañada por profesionales veterinarios." data-en="Available options can involve costs and travel that are difficult for some rural families. The project aims to explore a local, personalized alternative with veterinary guidance.">Las opciones disponibles pueden implicar costos y desplazamientos difíciles de asumir para algunas familias rurales. El proyecto busca explorar una alternativa local, personalizada y acompañada por profesionales veterinarios.</p>
+          </article>
+          <article class="card">
+            <h4 data-es="Cultural" data-en="Cultural">Cultural</h4>
+            <p data-es="A veces se piensa que un animal con discapacidad “ya no sirve”, y se conoce poco sobre rehabilitación animal." data-en="Sometimes a disabled animal is thought to be “no longer useful”, and little is known about animal rehabilitation.">A veces se piensa que un animal con discapacidad “ya no sirve”, y se conoce poco sobre rehabilitación animal.</p>
+          </article>
+          <article class="card">
+            <h4 data-es="Geográfico" data-en="Geographic">Geográfico</h4>
+            <p data-es="Terrenos quebrados, temporadas de lluvia intensa y distancia a centros veterinarios especializados." data-en="Rugged terrain, heavy rainy seasons and distance from specialized veterinary centers.">Terrenos quebrados, temporadas de lluvia intensa y distancia a centros veterinarios especializados.</p>
+          </article>
+        </div>
+
+        <h3 class="sub" data-es="Lo que proponemos" data-en="What we propose">Lo que proponemos</h3>
+        <div class="cards cards-3">
+          <article class="card card-accent">
+            <h4 data-es="Prótesis a la medida" data-en="Made-to-measure prosthetics">Prótesis a la medida</h4>
+            <p data-es="La propuesta contempla medidas individuales y un diseño digital personalizado; la forma de ajuste debe definirse y validarse para cada caso." data-en="The proposal includes individual measurements and a personalized digital design; the fitting method needs to be defined and validated for each case.">La propuesta contempla medidas individuales y un diseño digital personalizado; la forma de ajuste debe definirse y validarse para cada caso.</p>
+          </article>
+          <article class="card card-accent">
+            <h4 data-es="Materiales locales y reciclados" data-en="Local and recycled materials">Materiales locales y reciclados</h4>
+            <p data-es="Estructura en PETG-CF, suela de caucho reciclado, tornillos de titanio y almohadillas de silicona." data-en="PETG-CF structure, recycled rubber sole, titanium screws and silicone pads.">Estructura en PETG-CF, suela de caucho reciclado, tornillos de titanio y almohadillas de silicona.</p>
+          </article>
+          <article class="card card-accent">
+            <h4 data-es="Acceso comunitario" data-en="Community access">Acceso comunitario</h4>
+            <p data-es="Explorar un modelo de subsidios escalonados, orientación para tutores y seguimiento posterior, sujeto a recursos y validación comunitaria." data-en="Explore tiered subsidies, guidance for guardians and follow-up, subject to resources and community validation.">Explorar un modelo de subsidios escalonados, orientación para tutores y seguimiento posterior, sujeto a recursos y validación comunitaria.</p>
+          </article>
+        </div>
+
+        <h3 class="sub" data-es="Objetivos" data-en="Goals">Objetivos</h3>
+        <div class="goal">
+          <h4 data-es="Objetivo general" data-en="General goal">Objetivo general</h4>
+          <p data-es="Desarrollar e implementar prótesis 3D personalizadas para caninos y felinos con amputaciones en Boyacá, utilizando materiales locales, para restaurar su movilidad, mejorar su calidad de vida y promover un modelo comunitario sostenible durante 2025-2026." data-en="To develop and implement personalized 3D prosthetics for amputee canines and felines in Boyacá, using local materials, to restore their mobility, improve their quality of life and promote a sustainable community model during 2025-2026.">Desarrollar e implementar prótesis 3D personalizadas para caninos y felinos con amputaciones en Boyacá, utilizando materiales locales, para restaurar su movilidad, mejorar su calidad de vida y promover un modelo comunitario sostenible durante 2025-2026.</p>
+        </div>
+        <ol class="steps-list" aria-label="Objetivos específicos" data-es-aria-label="Objetivos específicos" data-en-aria-label="Specific goals">
+          <li data-es="Proyectar un diagnóstico comunitario en municipios de Boyacá: causas de las amputaciones, características de las mascotas y barreras de acceso de sus tutores." data-en="Plan a community diagnosis in Boyacá municipalities: causes of amputations, pet characteristics and access barriers faced by their guardians.">Proyectar un diagnóstico comunitario en municipios de Boyacá: causas de las amputaciones, características de las mascotas y barreras de acceso de sus tutores.</li>
+          <li data-es="Diseñar prótesis adaptadas a razas criollas y terrenos montañosos con software de modelado 3D y materiales locales que reduzcan costos." data-en="Design prosthetics adapted to mixed-breed animals and mountain terrain using 3D modeling software and local materials that reduce costs.">Diseñar prótesis adaptadas a razas criollas y terrenos montañosos con software de modelado 3D y materiales locales que reduzcan costos.</li>
+          <li data-es="Definir una meta de prototipos para impresión 3D y validar cada diseño con acompañamiento veterinario antes de considerar su implementación." data-en="Set a prototype target for 3D printing and validate each design with veterinary guidance before considering implementation.">Definir una meta de prototipos para impresión 3D y validar cada diseño con acompañamiento veterinario antes de considerar su implementación.</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ================= DIAGNÓSTICO: FODA + ESPINA DE PESCADO ================= -->
+    <section id="diagnostico" class="section reveal" data-nav="diagnostico" aria-labelledby="diag-title">
+      <div class="container">
+        <header class="section-head">
+          <p class="eyebrow" data-es="Diagnóstico del proyecto" data-en="Project diagnosis">Diagnóstico del proyecto</p>
+          <h2 id="diag-title" data-es="Lo que tenemos a favor y lo que nos falta" data-en="What we have going for us and what we still lack">Lo que tenemos a favor y lo que nos falta</h2>
+          <p class="section-lead" data-es="Hacemos un diagnóstico honesto con un análisis FODA y un diagrama de espina de pescado (Ishikawa)." data-en="We run an honest diagnosis using a SWOT analysis (called FODA in Spanish) and a fishbone (Ishikawa) diagram.">Hacemos un diagnóstico honesto con un análisis FODA y un diagrama de espina de pescado (Ishikawa).</p>
+        </header>
+
+        <h3 class="sub">FODA</h3>
+        <div class="foda">
+          <article class="foda-card foda-f">
+            <h4 data-es="Fortalezas" data-en="Strengths">Fortalezas</h4>
+            <ul>
+              <li data-es="Diseño 3D" data-en="3D design">Diseño 3D</li>
+              <li data-es="Exploración de materiales disponibles" data-en="Exploring available materials">Exploración de materiales disponibles</li>
+              <li data-es="Interés en colaborar con profesionales veterinarios" data-en="Interest in working with veterinary professionals">Interés en colaborar con profesionales veterinarios</li>
+              <li data-es="Equipo comprometido" data-en="Committed team">Equipo comprometido</li>
+            </ul>
+          </article>
+          <article class="foda-card foda-d">
+            <h4 data-es="Debilidades" data-en="Weaknesses">Debilidades</h4>
+            <ul>
+              <li data-es="Poca experiencia" data-en="Little experience">Poca experiencia</li>
+              <li data-es="Solo dos impresoras" data-en="Only two printers">Solo dos impresoras</li>
+              <li data-es="Falta de transporte" data-en="Lack of transport">Falta de transporte</li>
+              <li data-es="Tiempo limitado" data-en="Limited time">Tiempo limitado</li>
+            </ul>
+          </article>
+          <article class="foda-card foda-o">
+            <h4 data-es="Oportunidades" data-en="Opportunities">Oportunidades</h4>
+            <ul>
+              <li data-es="Demanda que estimamos alta (por validar)" data-en="Demand we estimate to be high (to be validated)">Demanda que estimamos alta (por validar)</li>
+              <li data-es="Convocatorias de apoyo (por explorar)" data-en="Support calls (to explore)">Convocatorias de apoyo (por explorar)</li>
+              <li data-es="Conciencia animal" data-en="Growing animal awareness">Conciencia animal</li>
+            </ul>
+          </article>
+          <article class="foda-card foda-a">
+            <h4 data-es="Amenazas" data-en="Threats">Amenazas</h4>
+            <ul>
+              <li data-es="Subida de precios" data-en="Rising prices">Subida de precios</li>
+              <li data-es="Resistencia cultural" data-en="Cultural resistance">Resistencia cultural</li>
+              <li data-es="Malas vías" data-en="Poor roads">Malas vías</li>
+              <li data-es="Competencia" data-en="Competition">Competencia</li>
+            </ul>
+          </article>
+        </div>
+
+        <h3 class="sub" data-es="Espina de pescado: causas y riesgos" data-en="Fishbone: causes and risks">Espina de pescado: causas y riesgos</h3>
+        <!-- Diagrama de Ishikawa hecho con HTML/CSS: ocho categorías que apuntan al problema central -->
+        <div class="fish" role="group" aria-label="Diagrama de Ishikawa" data-es-aria-label="Diagrama de Ishikawa: ocho categorías de causas que llevan al problema central" data-en-aria-label="Ishikawa diagram: eight cause categories leading to the central problem">
+          <div class="fish-grid">
+            <article class="fish-card"><h4 data-es="Aceptación" data-en="Acceptance">Aceptación</h4><p data-es="Escepticismo sobre la efectividad; falta de sensibilización y educación." data-en="Skepticism about effectiveness; lack of awareness and education.">Escepticismo sobre la efectividad; falta de sensibilización y educación.</p></article>
+            <article class="fish-card"><h4 data-es="Animal y entorno" data-en="Animal and environment">Animal y entorno</h4><p data-es="Factores del cennizas final: salud del animal y dedicación del dueño." data-en="End-user factors: the animal’s health and the owner’s dedication.">Factores del cennizas final: salud del animal y dedicación del dueño.</p></article>
+            <article class="fish-card"><h4 data-es="Producción" data-en="Production">Producción</h4><p data-es="Problemas técnicos de impresión 3D, ensamblaje, control de calidad y escalabilidad de costos." data-en="Technical issues with 3D printing, assembly, quality control and cost scalability.">Problemas técnicos de impresión 3D, ensamblaje, control de calidad y escalabilidad de costos.</p></article>
+            <article class="fish-card"><h4 data-es="Materiales" data-en="Materials">Materiales</h4><p data-es="Fallas en cantidad, idoneidad o durabilidad de insumos clave (PLA, barniz, caucho, titanio)." data-en="Shortfalls in quantity, suitability or durability of key inputs (PLA, varnish, rubber, titanium).">Fallas en cantidad, idoneidad o durabilidad de insumos clave (PLA, barniz, caucho, titanio).</p></article>
+            <article class="fish-card"><h4 data-es="Sostenibilidad" data-en="Sustainability">Sostenibilidad</h4><p data-es="Falta un modelo claro para producir de forma eficiente: plan de negocio, canales de distribución." data-en="No clear model yet to produce efficiently: business plan, distribution channels.">Falta un modelo claro para producir de forma eficiente: plan de negocio, canales de distribución.</p></article>
+            <article class="fish-card"><h4 data-es="Normativa y ética" data-en="Regulation and ethics">Normativa y ética</h4><p data-es="Vacíos legales, permisos sanitarios complejos, responsabilidad en caso de daños." data-en="Legal gaps, complex health permits, liability in case of harm.">Vacíos legales, permisos sanitarios complejos, responsabilidad en caso de daños.</p></article>
+            <article class="fish-card"><h4 data-es="Equipo y logística" data-en="Team and logistics">Equipo y logística</h4><p data-es="Fallas humanas, de gestión, de presupuesto y de colaboración." data-en="Human, management, budget and collaboration shortcomings.">Fallas humanas, de gestión, de presupuesto y de colaboración.</p></article>
+            <article class="fish-card"><h4 data-es="Diseño" data-en="Design">Diseño</h4><p data-es="Errores de concepción, mala adaptación anatómica, falta de pruebas, rigidez." data-en="Conception errors, poor anatomical fit, lack of testing, rigidity.">Errores de concepción, mala adaptación anatómica, falta de pruebas, rigidez.</p></article>
+          </div>
+          <div class="fish-head" aria-hidden="true"><span data-es="Acceso limitado a prótesis para caninos y felinos en Boyacá" data-en="Limited access to prosthetics for canines and felines in Boyacá">Acceso limitado a prótesis para caninos y felinos en Boyacá</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= METODOLOGÍA: fases 2025 y 2026 ================= -->
+    <section id="metodologia" class="section section-alt reveal" data-nav="diagnostico" aria-labelledby="metodo-title">
+      <div class="container">
+        <header class="section-head">
+          <p class="eyebrow" data-es="Metodología" data-en="Methodology">Metodología</p>
+          <h2 id="metodo-title" data-es="Investigación-acción en dos fases" data-en="Action research in two phases">Investigación-acción en dos fases</h2>
+          <p class="section-lead" data-es="Este es el plan de trabajo del proyecto para 2025 y 2026; las actividades y metas son proyecciones sujetas al avance, los recursos disponibles y la validación veterinaria." data-en="This is the project work plan for 2025 and 2026; activities and goals are projections subject to progress, available resources and veterinary validation.">Este es el plan de trabajo del proyecto para 2025 y 2026; las actividades y metas son proyecciones sujetas al avance, los recursos disponibles y la validación veterinaria.</p>
+        </header>
+
+        <div class="phases">
+          <article class="phase">
+            <h3 data-es="Fase I · 2025 — Investigación y desarrollo" data-en="Phase I · 2025 — Research and development">Fase I · 2025 — Investigación y desarrollo</h3>
+            <ol class="timeline">
+              <li><span class="when" data-es="Ene – Mar" data-en="Jan – Mar">Ene – Mar</span><span data-es="Diagnóstico comunitario en municipios de Boyacá (proyección)" data-en="Community diagnosis in Boyacá municipalities (projection)">Diagnóstico comunitario en municipios de Boyacá (proyección)</span></li>
+              <li><span class="when" data-es="Abr – Jun" data-en="Apr – Jun">Abr – Jun</span><span data-es="Diseño y prototipado" data-en="Design and prototyping">Diseño y prototipado</span></li>
+              <li><span class="when" data-es="Jul – Sep" data-en="Jul – Sep">Jul – Sep</span><span data-es="Presentación y validación" data-en="Presentation and validation">Presentación y validación</span></li>
+              <li><span class="when" data-es="Oct – Dic" data-en="Oct – Dec">Oct – Dic</span><span data-es="Ajustes y preparación para implementar" data-en="Adjustments and preparation for implementation">Ajustes y preparación para implementar</span></li>
+            </ol>
+          </article>
+          <article class="phase">
+            <h3 data-es="Fase II · 2026 — Implementación" data-en="Phase II · 2026 — Implementation">Fase II · 2026 — Implementación</h3>
+            <ol class="timeline">
+              <li><span class="when" data-es="Mar – Abr" data-en="Mar – Apr">Mar – Abr</span><span data-es="Análisis de la implementación de las primeras prótesis" data-en="Analysis of the first prosthetics’ implementation">Análisis de la implementación de las primeras prótesis</span></li>
+              <li><span class="when" data-es="Jun – Jul" data-en="Jun – Jul">Jun – Jul</span><span data-es="Capacitación a dueños y veterinarios rurales" data-en="Training for owners and rural veterinarians">Capacitación a dueños y veterinarios rurales</span></li>
+              <li><span class="when" data-es="Ago – Oct" data-en="Aug – Oct">Ago – Oct</span><span data-es="Fabricación y evaluación de prototipos, si las condiciones lo permiten" data-en="Prototype fabrication and evaluation, if conditions allow">Fabricación y evaluación de prototipos, si las condiciones lo permiten</span></li>
+              <li><span class="when" data-es="Nov" data-en="Nov">Nov</span><span data-es="Documentación y cierre" data-en="Documentation and wrap-up">Documentación y cierre</span></li>
+            </ol>
+          </article>
+        </div>
+
+        <div class="goal">
+          <h4 data-es="¿Cómo evaluamos cada prótesis?" data-en="How do we evaluate each prosthetic?">¿Cómo evaluamos cada prótesis?</h4>
+          <p data-es="Revisamos la integridad estructural, el mecanismo de extensión, el ajuste angular de la suela y el par de torsión de los tornillos. Luego hacemos una prueba de ajuste con la mascota en un entorno controlado y en terreno irregular simulado, mirando comodidad, estabilidad y naturalidad al caminar." data-en="We check structural integrity, the extension mechanism, the sole’s angle adjustment and screw torque. Then we run a fitting test with the pet in a controlled setting and on simulated uneven ground, looking at comfort, stability and naturalness of gait.">Revisamos la integridad estructural, el mecanismo de extensión, el ajuste angular de la suela y el par de torsión de los tornillos. Luego hacemos una prueba de ajuste con la mascota en un entorno controlado y en terreno irregular simulado, mirando comodidad, estabilidad y naturalidad al caminar.</p>
+          <p class="note" data-es="Las pruebas biomecánicas con animales y la validación formal de biocompatibilidad todavía están pendientes." data-en="Biomechanical tests with animals and formal biocompatibility validation are still pending.">Las pruebas biomecánicas con animales y la validación formal de biocompatibilidad todavía están pendientes.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= TALLER (plano 60 m²) ================= -->
+    <section id="taller" class="section reveal" data-nav="taller" aria-labelledby="taller-title">
+      <div class="container">
+        <header class="section-head">
+          <p class="eyebrow" data-es="Nuestro taller proyectado" data-en="Our planned workshop">Nuestro taller proyectado</p>
+          <h2 id="taller-title" data-es="Un taller de 60 m² pensado para cada etapa" data-en="A 60 m² workshop designed for every stage">Un taller de 60 m² pensado para cada etapa</h2>
+          <p class="section-lead" data-es="Así distribuimos el espacio, desde el escaneo hasta las pruebas con la mascota." data-en="This is how we lay out the space, from scanning to testing with the pet.">Así distribuimos el espacio, desde el escaneo hasta las pruebas con la mascota.</p>
+        </header>
+
+        <!-- Plano: cada bloque tiene flex-grow proporcional a sus m² -->
+        <figure class="plan">
+          <div class="plan-box" role="group" aria-label="Plano del taller" data-es-aria-label="Plano del taller MekaPaws, 60 metros cuadrados" data-en-aria-label="MekaPaws workshop floor plan, 60 square meters">
+            <div class="plan-row">
+              <div class="room r-design" style="--m2:6"><strong data-es="Diseño" data-en="Design">Diseño</strong><span>6 m²</span></div>
+              <div class="room r-scan" style="--m2:4"><strong data-es="Escaneo" data-en="Scanning">Escaneo</strong><span>4 m²</span></div>
+              <div class="room r-print" style="--m2:12"><strong data-es="Impresoras 3D (2)" data-en="3D printers (2)">Impresoras 3D (2)</strong><span>12 m²</span></div>
+            </div>
+            <div class="plan-row">
+              <div class="room r-assembly" style="--m2:8"><strong data-es="Ensamble" data-en="Assembly">Ensamble</strong><span>8 m²</span></div>
+              <div class="room r-finish" style="--m2:6"><strong data-es="Acabado" data-en="Finishing">Acabado</strong><span>6 m²</span></div>
+              <div class="room r-store" style="--m2:6"><strong data-es="Almacén de materias primas" data-en="Raw materials storage">Almacén de materias primas</strong><span>6 m²</span></div>
+            </div>
+            <div class="plan-row">
+              <div class="room r-test" style="--m2:10"><strong data-es="Pruebas y validación" data-en="Testing and validation">Pruebas y validación</strong><span>10 m²</span></div>
+            </div>
+            <div class="plan-row">
+              <div class="room r-office" style="--m2:8"><strong data-es="Oficina administrativa" data-en="Administrative office">Oficina administrativa</strong><span>8 m²</span></div>
+            </div>
+          </div>
+          <figcaption data-es="Plano esquemático, sin escala exacta. Total: 60 m². Además proyectamos un centro rural en Duitama (bodega de 40 m²) para distribución y capacitación." data-en="Schematic plan, not exactly to scale. Total: 60 m². We also plan a rural hub in Duitama (40 m² warehouse) for distribution and training.">Plano esquemático, sin escala exacta. Total: 60 m². Además proyectamos un centro rural en Duitama (bodega de 40 m²) para distribución y capacitación.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ================= CÓMO FUNCIONA (6 pasos) ================= -->
+    <section id="como-funciona" class="section section-alt reveal" data-nav="taller" aria-labelledby="como-title">
+      <div class="container">
+        <header class="section-head">
+          <p class="eyebrow" data-es="Cómo funciona" data-en="How it works">Cómo funciona</p>
+          <h2 id="como-title" data-es="Seis pasos, de la valoración al seguimiento" data-en="Six steps, from assessment to follow-up">Seis pasos, de la valoración al seguimiento</h2>
+          <p class="section-lead" data-es="Este es el proceso propuesto por el proyecto; cada etapa dependerá de la valoración veterinaria y de que existan condiciones para implementarla." data-en="This is the process proposed by the project; each step depends on veterinary assessment and implementation being feasible.">Este es el proceso propuesto por el proyecto; cada etapa dependerá de la valoración veterinaria y de que existan condiciones para implementarla.</p>
+        </header>
+
+        <ol class="how">
+          <li>
+            <span class="num" aria-hidden="true">1</span>
+            <h3 data-es="Nos escribes" data-en="You contact us">Nos escribes</h3>
+            <p data-es="El formulario permite consultar el caso. La valoración veterinaria debe determinar si procede; si el proyecto avanza y hay viabilidad, se podrían tomar medidas." data-en="The form lets you ask about a case. A veterinary assessment should determine whether it is suitable; if the project moves forward, measurements could be taken.">El formulario permite consultar el caso. La valoración veterinaria debe determinar si procede; si el proyecto avanza y hay viabilidad, se podrían tomar medidas.</p>
+          </li>
+          <li>
+            <span class="num" aria-hidden="true">2</span>
+            <h3 data-es="Escaneo y medidas" data-en="Scan and measurements">Escaneo y medidas</h3>
+            <p data-es="Hacemos un escaneo 3D del muñón y del miembro sano, tomamos medidas y registramos edad, raza y peso." data-en="We 3D-scan the residual limb and the healthy limb, take measurements and record age, breed and weight.">Hacemos un escaneo 3D del muñón y del miembro sano, tomamos medidas y registramos edad, raza y peso.</p>
+          </li>
+          <li>
+            <span class="num" aria-hidden="true">3</span>
+            <h3 data-es="Diseño a la medida" data-en="Custom design">Diseño a la medida</h3>
+            <p data-es="El diseño consideraría el encaje y la suela según las medidas y el entorno de la mascota." data-en="The design would consider the fit and sole based on the pet’s measurements and environment.">El diseño consideraría el encaje y la suela según las medidas y el entorno de la mascota.</p>
+          </li>
+          <li>
+            <span class="num" aria-hidden="true">4</span>
+            <h3 data-es="Impresión y ensamble" data-en="Printing and assembly">Impresión y ensamble</h3>
+            <p data-es="El plan de materiales contempla PETG-CF, caucho reciclado, titanio grado 5 y silicona; su selección depende de las pruebas del prototipo." data-en="The materials plan considers PETG-CF, recycled rubber, grade 5 titanium and silicone; selection depends on prototype testing.">El plan de materiales contempla PETG-CF, caucho reciclado, titanio grado 5 y silicona; su selección depende de las pruebas del prototipo.</p>
+          </li>
+          <li>
+            <span class="num" aria-hidden="true">5</span>
+            <h3 data-es="Prueba de ajuste" data-en="Fitting test">Prueba de ajuste</h3>
+            <p data-es="Si la validación lo permite, se evaluaría el ajuste con orientación veterinaria y se documentarían los cambios necesarios." data-en="If validation allows it, fit would be assessed with veterinary guidance and any needed changes documented.">Si la validación lo permite, se evaluaría el ajuste con orientación veterinaria y se documentarían los cambios necesarios.</p>
+          </li>
+          <li>
+            <span class="num" aria-hidden="true">6</span>
+            <h3 data-es="Entrega y seguimiento" data-en="Delivery and follow-up">Entrega y seguimiento</h3>
+            <p data-es="Si el proyecto llega a implementarse, se acordaría con cada tutor cómo colocarla, limpiarla y revisar el ajuste, junto con el acompañamiento disponible." data-en="If the project reaches implementation, each guardian would receive guidance on fitting, cleaning and checking the prosthetic, along with the follow-up available.">Si el proyecto llega a implementarse, se acordaría con cada tutor cómo colocarla, limpiarla y revisar el ajuste, junto con el acompañamiento disponible.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ================= MINIJUEGO: salto de un gatito con prótesis ================= -->
+    <section id="minijuego" class="section section-alt reveal" data-nav="minijuego" aria-labelledby="game-title">
+      <div class="container narrow">
+        <header class="section-head">
+          <p class="eyebrow" data-es="Una pausa para jugar" data-en="A little game break">Una pausa para jugar</p>
+          <h2 id="game-title" data-es="El salto de Meka" data-en="Meka’s little run">El salto de Meka</h2>
+          <p class="section-lead" data-es="Ayuda a nuestro gatito a saltar los obstáculos del camino. Pulsa Espacio, ↑ o el botón Saltar." data-en="Help our kitten jump over the path. Press Space, ↑ or the Jump button.">Ayuda a nuestro gatito a saltar los obstáculos del camino. Pulsa Espacio, ↑ o el botón Saltar.</p>
+        </header>
+        <div class="game-panel">
+          <canvas id="cat-game" width="720" height="260" tabindex="0"
+                  role="img" aria-label="Minijuego: un gatito con una prótesis corre y salta obstáculos"
+                  data-es-aria-label="Minijuego: un gatito con una prótesis corre y salta obstáculos"
+                  data-en-aria-label="Mini game: a kitten with a prosthetic runs and jumps over obstacles">
+            <span data-es="Minijuego de MekaPaws. Usa el botón Iniciar y luego Espacio, flecha arriba o el botón Saltar." data-en="MekaPaws mini game. Press Start, then Space, Arrow Up or the Jump button.">Minijuego de MekaPaws. Usa el botón Iniciar y luego Espacio, flecha arriba o el botón Saltar.</span>
+          </canvas>
+          <div class="game-toolbar">
+            <p id="game-status" class="game-status" aria-live="polite" aria-atomic="true" data-es="Pulsa Iniciar y ayuda a Meka a avanzar." data-en="Press Start and help Meka keep moving.">Pulsa Iniciar y ayuda a Meka a avanzar.</p>
+            <p class="game-score"><span data-es="Puntos" data-en="Score">Puntos</span>: <strong id="game-score">0</strong></p>
+            <div class="game-controls">
+              <button type="button" class="btn btn-primary" id="game-start" data-es="Iniciar juego" data-en="Start game">Iniciar juego</button>
+              <button type="button" class="btn btn-game" id="game-jump" disabled data-es="Saltar" data-en="Jump">Saltar</button>
+            </div>
+          </div>
+          <p class="note game-note" data-es="Juego ilustrativo del proyecto. No representa resultados de pruebas con animales." data-en="An illustrative project game. It does not represent results from animal testing.">Juego ilustrativo del proyecto. No representa resultados de pruebas con animales.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= CATÁLOGO: opciones y acceso comunitario ================= -->
+    <section id="catalogo" class="section reveal" data-nav="catalogo" aria-labelledby="cat-title">
+      <div class="container">
+        <header class="section-head">
+          <p class="eyebrow" data-es="Catálogo del proyecto" data-en="Project catalog">Catálogo del proyecto</p>
+          <h2 id="cat-title" data-es="Diseño personalizado y apoyo comunitario" data-en="Personalized design and community support">Diseño personalizado y apoyo comunitario</h2>
+          <p class="section-lead" data-es="Estas son líneas de trabajo propuestas por MekaPaws. Los diseños, materiales y servicios están en desarrollo y requieren valoración veterinaria antes de cualquier implementación." data-en="These are work areas proposed by MekaPaws. Designs, materials and services are in development and require a veterinary assessment before any implementation.">Estas son líneas de trabajo propuestas por MekaPaws. Los diseños, materiales y servicios están en desarrollo y requieren valoración veterinaria antes de cualquier implementación.</p>
+        </header>
+
+        <article class="model-card" aria-labelledby="model-title">
+          <div class="model-copy">
+            <p class="eyebrow" data-es="Diseño 3D" data-en="3D design">Diseño 3D</p>
+            <h3 id="model-title" data-es="Mira la prótesis en tres dimensiones" data-en="Explore the prosthetic in 3D">Mira la prótesis en tres dimensiones</h3>
+            <p data-es="Este es el modelo compartido por el proyecto en Sketchfab. Puedes girarlo y acercarlo cuando cargue el visor." data-en="This is the model shared by the project on Sketchfab. Rotate and zoom it once the viewer loads.">Este es el modelo compartido por el proyecto en Sketchfab. Puedes girarlo y acercarlo cuando cargue el visor.</p>
+            <div class="model-credit">
+              <span data-es="Modelo «prótesis» por" data-en="Model “prótesis” by">Modelo «prótesis» por</span>
+              <a href="https://sketchfab.com/cennizas" target="_blank" rel="noopener noreferrer">cennizas</a>
+              <span data-es="· Licencia" data-en="· License">· Licencia</span>
+              <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a>.
+            </div>
+            <p class="note" data-es="El visor se conecta con Sketchfab solo cuando lo cargas. En algunos celulares puede requerir más recursos; también puedes abrir el modelo en una pestaña nueva." data-en="The viewer connects to Sketchfab only when you load it. It may need more resources on some phones; you can also open the model in a new tab.">El visor se conecta con Sketchfab solo cuando lo cargas. En algunos celulares puede requerir más recursos; también puedes abrir el modelo en una pestaña nueva.</p>
+            <a class="text-link" href="https://sketchfab.com/3d-models/protesis-0cc8b43ba55443ccb0eadc7c47e22d71" target="_blank" rel="noopener noreferrer" data-es="Abrir modelo en Sketchfab" data-en="Open model on Sketchfab">Abrir modelo en Sketchfab</a>
+          </div>
+          <div class="model-viewer">
+            <div class="embed-facade" id="model-facade">
+              <span class="model-orbit" aria-hidden="true">3D</span>
+              <p data-es="El modelo interactivo está listo para cargar." data-en="The interactive model is ready to load.">El modelo interactivo está listo para cargar.</p>
+              <button type="button" class="btn btn-primary" id="load-model" data-es="Cargar modelo 3D" data-en="Load 3D model">Cargar modelo 3D</button>
+            </div>
+            <div class="embed-frame" id="model-frame-wrap" hidden>
+              <iframe id="model-frame" title="Modelo 3D de prótesis MekaPaws en Sketchfab"
+                      data-es-title="Modelo 3D de prótesis MekaPaws en Sketchfab" data-en-title="MekaPaws 3D prosthetic model on Sketchfab"
+                      data-src="https://sketchfab.com/models/0cc8b43ba55443ccb0eadc7c47e22d71/embed?autostart=0&amp;ui_infos=0&amp;ui_watermark=1&amp;tracking=0"
+                      loading="lazy" allow="autoplay; fullscreen; xr-spatial-tracking" allowfullscreen
+                      referrerpolicy="strict-origin-when-cross-origin"></iframe>
+            </div>
+          </div>
+        </article>
+
+        <div class="catalog">
+          <article class="product product-main">
+            <div class="product-body">
+              <h3 data-es="Prótesis 3D personalizada" data-en="Personalized 3D prosthetic">Prótesis 3D personalizada</h3>
+              <p data-es="Alternativa en desarrollo para caninos y felinos. El diseño dependería de las medidas de cada animal y de una valoración veterinaria." data-en="An option in development for dogs and cats. Design would depend on each animal’s measurements and a veterinary assessment.">Alternativa en desarrollo para caninos y felinos. El diseño dependería de las medidas de cada animal y de una valoración veterinaria.</p>
+              <table class="specs">
+                <caption class="sr-only" data-es="Materiales considerados para el prototipo" data-en="Materials considered for the prototype">Materiales considerados para el prototipo</caption>
+                <tbody>
+                  <tr><th scope="row" data-es="Materiales en evaluación" data-en="Materials being evaluated">Materiales en evaluación</th><td data-es="PETG-CF, caucho reciclado, titanio grado 5 y silicona. La selección final depende de las pruebas y la valoración veterinaria." data-en="PETG-CF, recycled rubber, grade 5 titanium and silicone. Final selection depends on testing and veterinary assessment.">PETG-CF, caucho reciclado, titanio grado 5 y silicona. La selección final depende de las pruebas y la valoración veterinaria.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+        </div>
+
+        <h3 class="sub" data-es="Líneas de trabajo propuestas" data-en="Proposed work areas">Líneas de trabajo propuestas</h3>
+        <div class="cards cards-3">
+          <article class="card">
+            <h4 data-es="Diseño adaptado" data-en="Adapted design">Diseño adaptado</h4>
+            <p data-es="Modelado pensado para las medidas, la movilidad y el entorno de cada animal, sujeto a evaluación." data-en="Modeling based on each animal’s measurements, mobility and environment, subject to assessment.">Modelado pensado para las medidas, la movilidad y el entorno de cada animal, sujeto a evaluación.</p>
+          </article>
+          <article class="card">
+            <h4 data-es="Cuidado y ajustes" data-en="Care and adjustments">Cuidado y ajustes</h4>
+            <p data-es="Orientación para revisar el ajuste, la limpieza y el estado de los componentes." data-en="Guidance on checking fit, cleaning and component condition.">Orientación para revisar el ajuste, la limpieza y el estado de los componentes.</p>
+          </article>
+          <article class="card">
+            <h4 data-es="Aprendizaje comunitario" data-en="Community learning">Aprendizaje comunitario</h4>
+            <p data-es="Materiales de orientación para tutores y profesionales que quieran conocer el proceso." data-en="Guidance materials for guardians and professionals interested in the process.">Materiales de orientación para tutores y profesionales que quieran conocer el proceso.</p>
+          </article>
+        </div>
+
+        <h3 class="sub" data-es="Acceso comunitario" data-en="Community access">Acceso comunitario</h3>
+        <div class="table-wrap">
+          <table class="subsidy">
+            <caption class="sr-only" data-es="Propuesta de apoyo escalonado, pendiente de validación" data-en="Proposed tiered support, pending validation">Propuesta de apoyo escalonado, pendiente de validación</caption>
+            <thead>
+              <tr><th scope="col" data-es="Situación del hogar" data-en="Household situation">Situación del hogar</th><th scope="col" data-es="Alternativa propuesta" data-en="Proposed option">Alternativa propuesta</th></tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row" data-es="Hogares que requieren mayor apoyo" data-en="Households needing more support">Hogares que requieren mayor apoyo</th><td data-es="Se estudiaría un subsidio total o parcial." data-en="A full or partial subsidy could be considered.">Se estudiaría un subsidio total o parcial.</td></tr>
+              <tr><th scope="row" data-es="Hogares con posibilidad de aportar" data-en="Households able to contribute">Hogares con posibilidad de aportar</th><td data-es="Aporte proporcional a su capacidad, si el modelo se valida." data-en="A contribution based on their capacity, if the model is validated.">Aporte proporcional a su capacidad, si el modelo se valida.</td></tr>
+              <tr><th scope="row" data-es="Apoyos solidarios" data-en="Community contributions">Apoyos solidarios</th><td data-es="Podrían ayudar a sostener el acceso de otros hogares." data-en="Could help support access for other households.">Podrían ayudar a sostener el acceso de otros hogares.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note" data-es="El esquema de subsidios es una propuesta del proyecto; sus criterios y disponibilidad están pendientes de validación. No hay tarifas publicadas." data-en="The subsidy model is a project proposal; its criteria and availability are pending validation. No rates are published.">El esquema de subsidios es una propuesta del proyecto; sus criterios y disponibilidad están pendientes de validación. No hay tarifas publicadas.</p>
+      </div>
+    </section>
+
+    <!-- ================= UBICACIÓN ================= -->
+    <section id="ubicacion" class="section section-alt reveal" data-nav="ubicacion" aria-labelledby="ubic-title">
+      <div class="container">
+        <header class="section-head">
+          <p class="eyebrow" data-es="Ubicación" data-en="Location">Ubicación</p>
+          <h2 id="ubic-title" data-es="Bogotá y Boyacá" data-en="Bogotá and Boyacá">Bogotá y Boyacá</h2>
+          <p class="section-lead" data-es="Punto de contacto del proyecto en Usme, Bogotá. MekaPaws trabaja para desarrollar una alternativa de apoyo a tutores de caninos y felinos en zonas rurales de Boyacá." data-en="Project contact point in Usme, Bogotá. MekaPaws is developing a support option for dog and cat guardians in rural Boyacá.">Punto de contacto del proyecto en Usme, Bogotá. MekaPaws trabaja para desarrollar una alternativa de apoyo a tutores de caninos y felinos en zonas rurales de Boyacá.</p>
+        </header>
+
+        <div class="location-grid">
+          <div class="location-card">
+            <span class="location-pin" aria-hidden="true">⌖</span>
+            <p class="eyebrow" data-es="Punto de contacto" data-en="Contact point">Punto de contacto</p>
+            <address data-es="Calle 71 D Sur #14-16, Usme, Bogotá" data-en="Calle 71 D Sur #14-16, Usme, Bogotá">Calle 71 D Sur #14-16, Usme, Bogotá</address>
+            <a class="btn btn-primary" id="directions-btn" target="_blank" rel="noopener noreferrer"
+               href="https://www.google.com/maps/dir/?api=1&amp;destination=Calle%2071%20D%20Sur%20%2314-16%2C%20Usme%2C%20Bogot%C3%A1%2C%20Colombia" data-es="Cómo llegar" data-en="Get directions">Cómo llegar</a>
+          </div>
+          <div class="map-panel" id="map-panel">
+            <div class="map-facade" id="map-facade">
+              <p data-es="El mapa se carga solo cuando lo solicitas." data-en="The map loads only when you request it.">El mapa se carga solo cuando lo solicitas.</p>
+              <button type="button" class="btn btn-ghost-dark" id="load-map" data-es="Ver mapa" data-en="View map">Ver mapa</button>
+            </div>
+            <div class="map-frame-wrap" id="map-frame-wrap" hidden>
+              <iframe id="map-frame" title="Mapa de Calle 71 D Sur #14-16, Usme, Bogotá"
+                      data-es-title="Mapa de Calle 71 D Sur #14-16, Usme, Bogotá" data-en-title="Map of Calle 71 D Sur #14-16, Usme, Bogotá"
+                      data-src="https://maps.google.com/maps?q=Calle%2071%20D%20Sur%20%2314-16%2C%20Usme%2C%20Bogot%C3%A1%2C%20Colombia&amp;output=embed"
+                      loading="lazy" referrerpolicy="strict-origin-when-cross-origin" width="600" height="400"></iframe>
+            </div>
+          </div>
+        </div>
+        <div class="map-actions">
+          <p class="note" data-es="El mapa es un servicio externo y se mantiene sin cargar hasta que pulses “Ver mapa”." data-en="The map is an external service and stays unloaded until you select “View map”.">El mapa es un servicio externo y se mantiene sin cargar hasta que pulses “Ver mapa”.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= PREGUNTAS FRECUENTES (8) ================= -->
+    <section id="faq" class="section reveal" data-nav="faq" aria-labelledby="faq-title">
+      <div class="container narrow">
+        <header class="section-head">
+          <p class="eyebrow" data-es="Preguntas frecuentes" data-en="Frequently asked questions">Preguntas frecuentes</p>
+          <h2 id="faq-title" data-es="Lo que más nos preguntan" data-en="What people ask us most">Lo que más nos preguntan</h2>
+        </header>
+
+        <!-- <details> nativo: accesible por teclado sin JavaScript -->
+        <div class="faq">
+          <details>
+            <summary data-es="¿Para qué animales es?" data-en="Which animals is it for?">¿Para qué animales es?</summary>
+            <p data-es="Para perros y gatos con amputación o malformación en una extremidad. La valoración veterinaria define si una prótesis es adecuada en cada caso." data-en="For dogs and cats with an amputation or malformation in a limb. The veterinary assessment determines whether a prosthetic is suitable in each case.">Para perros y gatos con amputación o malformación en una extremidad. La valoración veterinaria define si una prótesis es adecuada en cada caso.</p>
+          </details>
+          <details>
+            <summary data-es="¿Cómo sé si mi mascota puede usar una prótesis?" data-en="How do I know if my pet can use a prosthetic?">¿Cómo sé si mi mascota puede usar una prótesis?</summary>
+            <p data-es="Llena el formulario de valoración. Revisamos el caso con un médico veterinario y, si es viable, hacemos escaneo 3D y medidas. No todos los casos son aptos y te lo diremos con claridad." data-en="Fill in the assessment form. We review the case with a veterinarian and, if viable, we do a 3D scan and measurements. Not every case is suitable and we will tell you clearly.">Llena el formulario de valoración. Revisamos el caso con un médico veterinario y, si es viable, hacemos escaneo 3D y medidas. No todos los casos son aptos y te lo diremos con claridad.</p>
+          </details>
+          <details>
+            <summary data-es="¿Cuánto cuesta y hay subsidios?" data-en="How much does it cost and are there subsidies?">¿Cuánto cuesta y hay subsidios?</summary>
+            <p data-es="No tenemos tarifas confirmadas para publicar. El modelo de apoyo comunitario y los posibles subsidios son propuestas que el proyecto debe validar." data-en="We do not have confirmed rates to publish. The community support model and possible subsidies are proposals that the project still needs to validate.">No tenemos tarifas confirmadas para publicar. El modelo de apoyo comunitario y los posibles subsidios son propuestas que el proyecto debe validar.</p>
+          </details>
+          <details>
+            <summary data-es="¿Cuánto tarda en estar lista?" data-en="How long until it is ready?">¿Cuánto tarda en estar lista?</summary>
+            <p data-es="No tenemos un plazo confirmado. Dependería del diseño, la impresión, los materiales disponibles y la validación veterinaria." data-en="We do not have a confirmed timeline. It would depend on the design, printing, available materials and veterinary validation.">No tenemos un plazo confirmado. Dependería del diseño, la impresión, los materiales disponibles y la validación veterinaria.</p>
+          </details>
+          <details>
+            <summary data-es="¿Y si mi mascota sigue creciendo?" data-en="What if my pet keeps growing?">¿Y si mi mascota sigue creciendo?</summary>
+            <p data-es="El diseño final aún no está validado. La posibilidad de realizar ajustes durante el crecimiento tendría que evaluarse con un profesional veterinario." data-en="The final design has not been validated. Whether adjustments can accommodate growth would need to be assessed with a veterinary professional.">El diseño final aún no está validado. La posibilidad de realizar ajustes durante el crecimiento tendría que evaluarse con un profesional veterinario.</p>
+          </details>
+          <details>
+            <summary data-es="¿De qué materiales está hecha?" data-en="What materials is it made of?">¿De qué materiales está hecha?</summary>
+            <p data-es="El proyecto considera PETG-CF, caucho reciclado, titanio grado 5 y silicona. La composición y el uso deben evaluarse antes de implementar el diseño." data-en="The project considers PETG-CF, recycled rubber, grade 5 titanium and silicone. Composition and use need assessment before implementation.">El proyecto considera PETG-CF, caucho reciclado, titanio grado 5 y silicona. La composición y el uso deben evaluarse antes de implementar el diseño.</p>
+          </details>
+          <details>
+            <summary data-es="¿Está certificada o aprobada por el INVIMA?" data-en="Is it certified or approved by INVIMA?">¿Está certificada o aprobada por el INVIMA?</summary>
+            <p data-es="No. El proyecto no cuenta con certificación ISO ni aprobación del INVIMA. Antes de avanzar con pruebas o implementación, buscamos orientación profesional y verificamos los requisitos aplicables." data-en="No. The project does not hold ISO certification or INVIMA approval. Before testing or implementation, we seek professional guidance and verify applicable requirements.">No. El proyecto no cuenta con certificación ISO ni aprobación del INVIMA. Antes de avanzar con pruebas o implementación, buscamos orientación profesional y verificamos los requisitos aplicables.</p>
+          </details>
+          <details>
+            <summary data-es="¿Reemplaza al veterinario? ¿Ya está probada?" data-en="Does it replace the vet? Is it already proven?">¿Reemplaza al veterinario? ¿Ya está probada?</summary>
+            <p data-es="No reemplaza al veterinario: cada caso tiene valoración y seguimiento veterinario. Estamos en fase de prototipo y validación; las pruebas biomecánicas con animales aún están pendientes, y no presentamos resultados que todavía no hemos medido." data-en="It does not replace the vet: every case has a veterinary assessment and follow-up. We are in the prototype and validation stage; biomechanical tests with animals are still pending, and we do not present results we have not yet measured.">No reemplaza al veterinario: cada caso tiene valoración y seguimiento veterinario. Estamos en fase de prototipo y validación; las pruebas biomecánicas con animales aún están pendientes, y no presentamos resultados que todavía no hemos medido.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= CONTACTO ================= -->
+    <section id="contacto" class="section section-alt reveal" data-nav="contacto" aria-labelledby="contacto-title">
+      <div class="container">
+        <header class="section-head">
+          <p class="eyebrow" data-es="Contacto" data-en="Contact">Contacto</p>
+          <h2 id="contacto-title" data-es="Solicita una valoración" data-en="Request an assessment">Solicita una valoración</h2>
+          <p class="section-lead" data-es="Cuéntanos sobre tu mascota. Te pediremos: nombre del tutor, ciudad, especie, tipo de amputación, teléfono o WhatsApp, correo y un mensaje." data-en="Tell us about your pet. We will ask for: guardian’s name, city, species, type of amputation, phone or WhatsApp, email and a message.">Cuéntanos sobre tu mascota. Te pediremos: nombre del tutor, ciudad, especie, tipo de amputación, teléfono o WhatsApp, correo y un mensaje.</p>
+        </header>
+
+        <div class="contact-grid">
+          <div class="form-box">
+            <!-- Google Forms embebido. Para respetar la privacidad (sin cookies de terceros por defecto),
+                 el iframe solo se carga cuando la persona pulsa el botón. Ver script.js y README. -->
+            <div id="form-facade" class="form-facade">
+              <p data-es="El formulario es de Google Forms. Al cargarlo, Google puede usar sus propias cookies." data-en="The form is hosted by Google Forms. When loaded, Google may use its own cookies.">El formulario es de Google Forms. Al cargarlo, Google puede usar sus propias cookies.</p>
+              <button type="button" class="btn btn-primary" id="load-form" data-es="Cargar formulario" data-en="Load form">Cargar formulario</button>
+            </div>
+            <div id="form-frame-wrap" class="form-frame-wrap" hidden>
+              <iframe id="form-frame" title="Formulario de solicitud de valoración" data-es-title="Formulario de solicitud de valoración" data-en-title="Assessment request form"
+                      data-src="https://docs.google.com/forms/d/e/1FAIpQLSc05Cw673Rp6flOLmuEvz-zyNCbNIorwdWN6thfvQ1ahP8elA/viewform?embedded=true"
+                      loading="lazy" width="640" height="900" data-es="Cargando…" data-en="Loading…">Cargando…</iframe>
+            </div>
+            <p class="note">
+              <a id="form-newtab" href="https://docs.google.com/forms/d/e/1FAIpQLSc05Cw673Rp6flOLmuEvz-zyNCbNIorwdWN6thfvQ1ahP8elA/viewform?usp=sharing&amp;ouid=104330438170753677021" target="_blank" rel="noopener noreferrer" data-es="Abrir el formulario en una pestaña nueva" data-en="Open the form in a new tab">Abrir el formulario en una pestaña nueva</a>
+            </p>
+          </div>
+
+          <aside class="contact-side" aria-label="Otros medios de contacto" data-es-aria-label="Otros medios de contacto" data-en-aria-label="Other ways to reach us">
+            <h3 data-es="¿Prefieres escribirnos?" data-en="Prefer to write to us?">¿Prefieres escribirnos?</h3>
+            <p><a class="btn btn-wa" href="https://wa.me/573045901916?text=Hola%2C%20quiero%20pedir%20una%20valoraci%C3%B3n%20para%20mi%20mascota%20con%20MekaPaws." target="_blank" rel="noopener noreferrer" data-es="Escribir por WhatsApp" data-en="Message us on WhatsApp">Escribir por WhatsApp</a></p>
+            <p><span class="label" data-es="WhatsApp" data-en="WhatsApp">WhatsApp</span>: <a href="https://wa.me/573045901916" target="_blank" rel="noopener noreferrer">+57 304 590 1916</a></p>
+            <p><span class="label"><span data-es="Correo" data-en="Email">Correo</span>:</span> <a href="mailto:ashescatto@gmail.com">ashescatto@gmail.com</a></p>
+            <p class="note" data-es="Usamos tus datos solo para responder tu solicitud de valoración." data-en="We use your data only to answer your assessment request.">Usamos tus datos solo para responder tu solicitud de valoración.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <img src="assets/logo-mekapaws.png" alt="MekaPaws" width="72" height="72" loading="lazy">
+        <p class="slogan" data-es="Segunda oportunidad para correr" data-en="A second chance to run">Segunda oportunidad para correr</p>
+        <p class="small">Colegio Orlando Fals Borda IED · Bogotá D. C.<br><span data-es="Proyectos EMI · Octubre de 2026" data-en="EMI Projects · October 2026">Proyectos EMI · Octubre de 2026</span></p>
+      </div>
+      <div>
+        <h3 data-es="Documentos" data-en="Documents">Documentos</h3>
+        <ul class="links">
+          <li><a href="assets/articulo-mekapaws.pdf" target="_blank" rel="noopener" download data-es="Artículo del proyecto (PDF)" data-en="Project article (PDF)">Artículo del proyecto (PDF)</a></li>
+          <li><a href="assets/cartilla-mekapaws.pdf" target="_blank" rel="noopener" download data-es="Cartilla del proyecto (PDF)" data-en="Project booklet (PDF)">Cartilla del proyecto (PDF)</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3 data-es="Gracias a" data-en="Thanks to">Gracias a</h3>
+        <p class="small" data-es="Agradecemos a docentes, familias, profesionales veterinarios y a la comunidad que acompaña el aprendizaje del proyecto." data-en="We are grateful to teachers, families, veterinary professionals and the community supporting this project’s learning.">Agradecemos a docentes, familias, profesionales veterinarios y a la comunidad que acompaña el aprendizaje del proyecto.</p>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <p class="small" data-es="El sitio no usa analytics ni rastreadores. Si se conecta la IA, tus mensajes se enviarán al proveedor elegido mediante el servidor de MekaPaws. El formulario, mapa y visor 3D se cargan cuando la persona los solicita." data-en="The site uses no analytics or trackers. If AI is connected, your messages will be sent to the selected provider through MekaPaws’ server. The form, map and 3D viewer load when a visitor requests them.">El sitio no usa analytics ni rastreadores. Si se conecta la IA, tus mensajes se enviarán al proveedor elegido mediante el servidor de MekaPaws. El formulario, mapa y visor 3D se cargan cuando la persona los solicita.</p>
+    </div>
+  </footer>
+
+  <!-- La guía local funciona sin endpoint; al configurar la URL, las consultas van al backend de IA. -->
+  <div class="cat-chat-widget">
+    <section class="cat-chat-panel" id="cat-chat-panel" hidden role="dialog" aria-modal="false" aria-labelledby="chat-title">
+      <header class="chat-header">
+        <div class="chat-header-cat" aria-hidden="true"><img src="assets/img/meka-sprites.png" alt=""></div>
+        <div class="chat-heading">
+          <h2 id="chat-title" data-es="Habla con Meka" data-en="Chat with Meka">Habla con Meka</h2>
+          <p data-es="Asistente de MekaPaws" data-en="MekaPaws assistant">Asistente de MekaPaws</p>
+        </div>
+        <button type="button" class="chat-close" id="chat-close" aria-label="Cerrar chat" data-es-aria-label="Cerrar chat" data-en-aria-label="Close chat">×</button>
+      </header>
+      <div class="chat-feed" id="chat-feed" role="log" aria-live="polite" aria-relevant="additions text">
+        <div class="chat-message chat-message-bot">
+          <p data-es="¡Hola! Soy el asistente virtual de MekaPaws. Pregúntame sobre el proyecto o cualquier otro tema." data-en="Hi! I’m the MekaPaws virtual assistant. Ask me about the project or any other topic.">¡Hola! Soy el asistente virtual de MekaPaws. Pregúntame sobre el proyecto o cualquier otro tema.</p>
+        </div>
+      </div>
+      <div class="chat-prompts" role="group" aria-label="Preguntas sugeridas" data-es-aria-label="Preguntas sugeridas" data-en-aria-label="Suggested questions">
+        <button type="button" data-chat-prompt data-es="¿Cómo solicito una valoración?" data-en="How do I request an assessment?">¿Cómo solicito una valoración?</button>
+        <button type="button" data-chat-prompt data-es="¿Qué materiales consideran?" data-en="What materials are being considered?">¿Qué materiales consideran?</button>
+        <button type="button" data-chat-prompt data-es="¿El diseño ya está probado?" data-en="Has the design been tested?">¿El diseño ya está probado?</button>
+      </div>
+      <form class="chat-form" id="chat-form">
+        <label class="sr-only" for="chat-input" data-es="Escribe tu pregunta" data-en="Type your question">Escribe tu pregunta</label>
+        <input id="chat-input" name="question" type="text" maxlength="240" autocomplete="off" required
+          placeholder="Escribe tu pregunta…" data-es-placeholder="Escribe tu pregunta…" data-en-placeholder="Type your question…">
+        <button type="submit" class="chat-send" aria-label="Enviar pregunta" data-es-aria-label="Enviar pregunta" data-en-aria-label="Send question">
+          <span data-es="Enviar" data-en="Send">Enviar</span>
+        </button>
+      </form>
+      <p class="chat-mode-note" id="chat-mode-note" data-es="IA por conectar: por ahora puedo responder preguntas frecuentes." data-en="AI not connected yet: I can answer common questions for now.">IA por conectar: por ahora puedo responder preguntas frecuentes.</p>
+      <p class="chat-disclaimer" data-es="La IA puede equivocarse. Si está conectada, el proveedor elegido procesa tus mensajes; no incluyas datos sensibles. No sustituye una valoración veterinaria." data-en="AI can make mistakes. If connected, the selected provider processes your messages; do not include sensitive information. It does not replace a veterinary assessment.">La IA puede equivocarse. Si está conectada, el proveedor elegido procesa tus mensajes; no incluyas datos sensibles. No sustituye una valoración veterinaria.</p>
+    </section>
+    <button type="button" class="chat-launcher" id="chat-launcher" aria-expanded="false" aria-haspopup="dialog" aria-controls="cat-chat-panel"
+      aria-label="Abrir chat con MekaPaws" data-es-aria-label="Abrir chat con MekaPaws" data-en-aria-label="Open MekaPaws chat">
+      <span class="chat-launcher-avatar" aria-hidden="true"><img src="assets/img/meka-sprites.png" alt=""></span>
+      <span class="chat-launcher-text" data-es="¿Te ayudo?" data-en="Can I help?">¿Te ayudo?</span>
+    </button>
+  </div>
+
+  <!-- Botón flotante de WhatsApp (visible en todas las secciones) -->
+  <a class="wa-float" href="https://wa.me/573045901916?text=Hola%2C%20quiero%20pedir%20una%20valoraci%C3%B3n%20para%20mi%20mascota%20con%20MekaPaws."
+     target="_blank" rel="noopener noreferrer"
+     aria-label="Escribir por WhatsApp" data-es-aria-label="Escribir a MekaPaws por WhatsApp (se abre en una pestaña nueva)" data-en-aria-label="Message MekaPaws on WhatsApp (opens in a new tab)">
+    <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12 2.5a9.5 9.5 0 0 0-8.2 14.3L2.5 21.5l4.8-1.3A9.5 9.5 0 1 0 12 2.5zm4.6 13.2c-.2.6-1.2 1.1-1.7 1.2-.4.1-1 .1-1.6-.1-.4-.1-.9-.3-1.5-.6-2.6-1.1-4.3-3.8-4.4-4-.1-.2-1-1.3-1-2.5s.6-1.8.9-2.1c.2-.2.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 1.9c.1.1.1.3 0 .5l-.3.4-.4.4c-.1.1-.3.3-.1.6.2.3.7 1.2 1.6 1.9 1.1 1 2 1.3 2.3 1.4.3.1.4.1.6-.1l.7-.9c.2-.3.4-.2.6-.1l1.8.9c.3.1.5.2.5.3.1.2.1.8-.1 1.4z"/></svg>
+    <span class="wa-text">WhatsApp</span>
+  </a>
+
+  <script src="script.js" defer></script>
+</body>
+</html>
